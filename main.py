@@ -33,3 +33,14 @@ Pull request -> request to add your work into main branch
 merge -> approved code joins main
 pull -> get lastest merged code into local system
 """
+"""
+1. main.py -> menu
+2. db_config.py -> Do not push
+3. db_config_example.py -> sample configuration file
+4. .getignore
+5. db_connection.py ->MySQL CONNECITON FUNCTION.
+6. setup_database.py -> Creates database and tables
+7. student_operations.py -> contains student-related funcaiton like add, unpdate, view, delate, search
+8. requirements.txt
+
+"""
