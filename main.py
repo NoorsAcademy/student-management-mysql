@@ -11,3 +11,25 @@ student_operations.py
 .gitignore
 
 """
+
+"""
+1. Create a base project
+2. Push to GitHub main branch
+3. Clone the project
+4. Create Own Branch
+5. Develop the module
+6. Push branch
+7. Create Pull request
+8. Review and Merge
+9. Pull latest code and show
+
+
+main branch -> stable project code
+student branch -> individual work area
+add -> move to staging area
+commit -> save code changes
+push -> upload branch to GitHub
+Pull request -> request to add your work into main branch
+merge -> approved code joins main
+pull -> get lastest merged code into local system
+"""
