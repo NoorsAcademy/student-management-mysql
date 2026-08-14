@@ -73,7 +73,7 @@ def view_students():
             print("No students found.")
             return
 
-        print("\Student List")
+        print("\nStudent List")
         print_line()
 
         for student in students:
@@ -95,13 +95,99 @@ def view_students():
 def search_student_by_city():
     print("Search Students by City module coming soon")
     # to be completed by Abu
-
+ 
 
 def update_student():
-    print("Update Student module coming soon")
-    # to be completed by Zeenath
+    cursor = None
+    connection = None
+    try:
+        print("\nUpdate Student")
+        print_line()
+
+        connection = get_connection()
+
+        if connection is None:
+            print("Database connection failed.")
+            return
+
+        cursor = connection.cursor()
+        student_id = input("Enter Student ID to Update:")
+        cursor.execute("SELECT * FROM tb_students WHERE student_id = %s",(student_id,))
+        student = cursor.fetchone()
+        
+        if student is None:
+            print("Student not Found")
+            return       
+
+        # display student details
+        
+        
+       # name = input("Enter new name: ({student})").strip()
+        city =input("Enter new city:")
+        mobile = input("Enter new mobile:")
+        gender = input("Enter new gender:")
+
+        if name == "":
+            name = student[1]
+        # do the same for other fields   
+        update_query ="""
+            UPDATE tb_students 
+            SET name = %s,
+                city = %s,
+                mobile = %s,
+                gender = %s
+            WHERE student_id = %s"""
+        cursor.execute(update_query,(name,city,mobile,gender,student_id))
+        connection.commit()
+        print("Student Updated Successfully")
+         
+    except Error as e:
+        print(f"Error Updating Student:",e)
+        
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+            print("Update successfully")
+
+    
 
 
 def delete_student():
-    print("Delete Student module coming soon")
-    # to be completed by Zeenath
+    cursor = None
+    try:
+        print("\nDelete Student")
+        print_line()
+    
+        connection = get_connection()
+    
+        if connection is None:
+            return
+        cursor = connection.cursor()
+
+        student_id = input("Enter Student ID to delete:")
+        query = """
+            SELECT * FROM tb_students WHERE student_id = %s
+            """
+        cursor.execute(query,(student_id,))
+        student = cursor.fetchone()
+
+        if student is None:
+            print("Student not found")
+            return
+
+        delete_query = "DELETE FROM tb_students WHERE student_id = %s"
+        cursor.execute(delete_query,(student_id,))
+        connection.commit()
+        print("Student deleted successfully")
+
+    except Error as e:
+        print(f"Error Deleting Student:",e)
+        
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+        if connection and connection.is_connected():
+            connection.close()
+        
