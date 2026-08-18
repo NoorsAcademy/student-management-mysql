@@ -122,22 +122,36 @@ def update_student():
         # display student details
         
         
-       # name = input("Enter new name: ({student})").strip()
-        city =input("Enter new city:")
-        mobile = input("Enter new mobile:")
-        gender = input("Enter new gender:")
+        name = input("Enter new name: ({student[1]})").strip()
+        age = int(input("Enter new age:({student[2]})")).strip()           
+        city =input("Enter new city:({student[3]})").strip()
+        course = input("Enter Course:({student[4]}) ").strip()
+        mobile = input("Enter Mobile:({student[5]}) ").strip()
+        email = input("Enter Email: ({student[6]})").strip()
 
         if name == "":
             name = student[1]
+        if age =="":
+            age = student[2]
+        if city =="":
+            city = student[3]
+        if course =="":
+            course = student[4]
+        if mobile =="":
+            mobile = student[5]
+        if email =="":
+            email = student[6]
         # do the same for other fields   
         update_query ="""
             UPDATE tb_students 
             SET name = %s,
+                age = %s,
                 city = %s,
+                course = %s,
                 mobile = %s,
-                gender = %s
+                email =%s
             WHERE student_id = %s"""
-        cursor.execute(update_query,(name,city,mobile,gender,student_id))
+        cursor.execute(update_query,(name,age,city,course,mobile,email,(student_id,)))
         connection.commit()
         print("Student Updated Successfully")
          
@@ -155,6 +169,7 @@ def update_student():
 
 def delete_student():
     cursor = None
+    connection = None
     try:
         print("\nDelete Student")
         print_line()
