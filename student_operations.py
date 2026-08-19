@@ -93,8 +93,31 @@ def view_students():
 
 
 def search_student_by_city():
-    print("Search Students by City module coming soon")
-    # to be completed by Abu
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        city = input("Enter city to search: ")
+
+        query = "SELECT * FROM tb_students WHERE city = %s;"
+        cursor.execute(query, (city,))
+
+        students = cursor.fetchall()
+
+        if len(students) == 0:
+            print("No students found from this city.")
+        else:
+            print(f"\nStudents from {city}:")
+            for student in students:
+                print(student)
+
+    except Exception as err:
+        print("Error:", err)
+
+    finally:
+        if "connection" in locals() and connection.is_connected():
+            cursor.close()
+            connection.close()
 
 
 def update_student():
