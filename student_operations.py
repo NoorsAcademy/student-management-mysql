@@ -41,7 +41,6 @@ def add_student():
         cursor.execute(query, values)
         connection.commit()
     
-
         print("Student added successfully.")
         print("New Student ID:", cursor.lastrowid)
     except Error as e:
@@ -120,28 +119,38 @@ def update_student():
             return       
 
         # display student details
-        
-        
-        name = input("Enter new name: ({student[1]})").strip()
-        age = int(input("Enter new age:({student[2]})")).strip()           
-        city =input("Enter new city:({student[3]})").strip()
-        course = input("Enter Course:({student[4]}) ").strip()
-        mobile = input("Enter Mobile:({student[5]}) ").strip()
-        email = input("Enter Email: ({student[6]})").strip()
+        print("\nCurrent Student Details:")
+        print(f"Name   : {student[1]}")
+        print(f"Age    : {student[2]}")
+        print(f"City   : {student[3]}")
+        print(f"Course : {student[4]}")
+        print(f"Mobile : {student[5]}")
+        print(f"Email  : {student[6]}")
+        print_line()
+
+        name = input(f"Enter new name ({student[1]} ):").strip()
+        age_input= (input(f"Enter new age ({student[2]}) :")).strip()
+        city =input(f"Enter new city ({student[3]}) :").strip()
+        course = input(f"Enter course ({student[4]}): ").strip()
+        mobile = input(f"Enter mobile ({student[5]}): ").strip()
+        email = input(f"Enter email ({student[6]}):").strip()
 
         if name == "":
             name = student[1]
-        if age =="":
+        if age_input != "":
+            age = int(age_input)
+        else:
+            
             age = student[2]
-        if city =="":
+        if city == "":
             city = student[3]
-        if course =="":
+        if course == "":
             course = student[4]
-        if mobile =="":
+        if mobile == "":
             mobile = student[5]
-        if email =="":
+        if email == "":
             email = student[6]
-        # do the same for other fields   
+# do the same for other fields   
         update_query ="""
             UPDATE tb_students 
             SET name = %s,
@@ -151,12 +160,14 @@ def update_student():
                 mobile = %s,
                 email =%s
             WHERE student_id = %s"""
-        cursor.execute(update_query,(name,age,city,course,mobile,email,(student_id,)))
+        cursor.execute(update_query,(name,age,city,course,mobile,email,student_id))
         connection.commit()
         print("Student Updated Successfully")
          
     except Error as e:
-        print(f"Error Updating Student:",e)
+        if connection:
+            connection.rollback()
+        print(f"Error Updating Student: {e} ")
         
     finally:
         if connection and connection.is_connected():
@@ -177,10 +188,12 @@ def delete_student():
         connection = get_connection()
     
         if connection is None:
+            print("Database connection failed.")
             return
         cursor = connection.cursor()
 
-        student_id = input("Enter Student ID to delete:")
+        student_id = input("Enter Student ID to delete:").strip()
+        
         query = """
             SELECT * FROM tb_students WHERE student_id = %s
             """
@@ -190,6 +203,20 @@ def delete_student():
         if student is None:
             print("Student not found")
             return
+        #display selected student details
+        print("\nCurrent Student Details:")
+        print(f"Name   : {student[1]}")
+        print(f"Age    : {student[2]}")
+        print(f"City   : {student[3]}")
+        print(f"Course : {student[4]}")
+        print(f"Mobile : {student[5]}")
+        print(f"Email  : {student[6]}")
+        print_line()
+
+        confirm = input("Type YES to confirm deletion:").strip()
+
+        if confirm != "YES":
+            print("Delete Cancelled")
 
         delete_query = "DELETE FROM tb_students WHERE student_id = %s"
         cursor.execute(delete_query,(student_id,))
@@ -197,7 +224,9 @@ def delete_student():
         print("Student deleted successfully")
 
     except Error as e:
-        print(f"Error Deleting Student:",e)
+        if connection:
+            connection.rollback()
+        print(f"Error Deleting Student: {e}")
         
     finally:
         if cursor is not None:
