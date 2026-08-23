@@ -165,7 +165,7 @@ def update_student():
         print("Student Updated Successfully")
         
     except ValueError:
-    print("Student ID and age must be valid numbers.")
+        print("Student ID and age must be valid numbers.")
     
     except Error as e:
         if connection:
