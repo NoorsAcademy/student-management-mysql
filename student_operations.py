@@ -163,7 +163,10 @@ def update_student():
         cursor.execute(update_query,(name,age,city,course,mobile,email,student_id))
         connection.commit()
         print("Student Updated Successfully")
-         
+        
+    except ValueError:
+    print("Student ID and age must be valid numbers.")
+    
     except Error as e:
         if connection:
             connection.rollback()
@@ -173,8 +176,6 @@ def update_student():
         if connection and connection.is_connected():
             cursor.close()
             connection.close()
-            print("Update successfully")
-
     
 
 
@@ -217,6 +218,7 @@ def delete_student():
 
         if confirm != "YES":
             print("Delete Cancelled")
+            return
 
         delete_query = "DELETE FROM tb_students WHERE student_id = %s"
         cursor.execute(delete_query,(student_id,))
