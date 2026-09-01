@@ -17,6 +17,7 @@ def add_student():
         course = input("Enter Course: ").strip()
         mobile = input("Enter Mobile: ").strip()
         email = input("Enter Email: ").strip()
+        status= input("Enter status(Active/Inactive):")
 
         if name == "":
             print("Name cannot be empty.")
@@ -33,10 +34,10 @@ def add_student():
 
         query = """
             INSERT INTO tb_students 
-            (name, age, city, course, mobile, email)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            (name, age, city, course, mobile, email,status)
+            VALUES (%s, %s, %s, %s, %s, %s,%s)
         """
-        values = (name, age, city, course, mobile, email)
+        values = (name, age, city, course, mobile, email,status)
         
         cursor.execute(query, values)
         connection.commit()
@@ -236,4 +237,58 @@ def delete_student():
 
         if connection and connection.is_connected():
             connection.close()
-        
+
+   #extra features contact details     
+
+def contact_details():
+    cursor = None
+    connection = None
+    try:
+        print("\nContact Details")
+        print_line()
+    
+        connection = get_connection()
+    
+        if connection is None:
+            print("Database connection failed.")
+            return
+    
+        cursor = connection.cursor()
+            
+        student_id = int(input("Enter Student ID:"))
+        cursor.execute(
+        "SELECT name FROM tb_students WHERE student_id =%s",
+        (student_id,))
+        student= cursor.fetchone()
+        if student is None:
+            print("Student not found!")
+            return
+
+        print("Student Name:",student[0])
+        parent_name = input("Enter Parent/Guardian Name:").strip()
+        parent_mobile = input("Enter Parent Mobile:")
+        alternate_number = input("Enter Alternate Number:")
+        query="""
+        UPDATE tb_students
+        SET parent_name = %s,
+            parent_mobile = %s,
+            alternate_number = %s
+        WHERE student_id = %s
+        """
+        values=(parent_name,parent_mobile,alternate_number,student_id)
+        cursor.execute(query,values)
+        connection.commit()
+        print("Contact details saved successfully!")
+
+    except Error as e:
+        if connection:
+            connection.rollback()
+        print(f"Error Adding Contact: {e} ")
+            
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
+
+    
