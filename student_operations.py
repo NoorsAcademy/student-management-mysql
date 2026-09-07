@@ -17,6 +17,7 @@ def add_student():
         course = input("Enter Course: ").strip()
         mobile = input("Enter Mobile: ").strip()
         email = input("Enter Email: ").strip()
+        status= input("Enter status(Active/Inactive):")
 
         if name == "":
             print("Name cannot be empty.")
@@ -34,7 +35,7 @@ def add_student():
         query = """
             INSERT INTO tb_students 
             (name, age, city, course, mobile, email)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s,%s)
         """
         values = (name, age, city, course, mobile, email)
         
@@ -140,7 +141,6 @@ def update_student():
         if age_input != "":
             age = int(age_input)
         else:
-            
             age = student[2]
         if city == "":
             city = student[3]
@@ -236,4 +236,237 @@ def delete_student():
 
         if connection and connection.is_connected():
             connection.close()
+
+   #extra features#
+   #Search student by Name
+
+def search_student_by_name():
+    connection = None
+    cursor = None
+
+    try:
+        print("\nSearch student by Name")
+        print_line()
+
+        name = input("Enter name or part of name:").strip()
+
+        if name=="":
+            print("Name cannot be empty.")
+            return
+
+        connection = get_connection()
+        if connection is None:
+            print("Database connection failed.")
+            return
+
+        cursor = connection.cursor()
+
+        query ="""
+            SELECT student_id,name,age,city,course,mobile,email
+            FROM tb_students
+            WHERE name LIKE %s
+            ORDER BY student_id
+        """
+
+        cursor.execute(query,(f"%{name}%",))
+        students = cursor.fetchall()
+
+        if len(students)==0:
+            print("No Students found")  
+            return
+        print("\nMatching Students")
+        print_line()
+
+        for student in students:
+            print(f"Student ID:{student[0]}")
+            print(f"Name:{student[1]}")
+            print(f"Age:{student[2]}")
+            print(f"City:{student[3]}")
+            print(f"Course:{student[4]}")
+            print(f"Mobile:{student[5]}")
+            print(f"Email:{student[6]}")
+            print_line()
+    except Error as e:
+        print(f"Error searching student:{e}") 
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+        if connection in locals() and connection is not None and connection.is_connected():
+            connection.close()                
+                              
+ # view student sorted by name
+
+def view_students_sorted_by_name():
+    connection = None
+    cursor = None
+    try:
+        print("\nStudents sorted by Name")
+        print_line()
+
+        connection = get_connection()
+
+        if connection is None:
+            print("Database connection failed.")
+            return
+        cursor = connection.cursor()
+
+        query ="""
+            SELECT student_id,name,age,city,course,mobile,email
+            FROM tb_students
+            ORDER BY name ASC
+            """
+        cursor.execute(query)
+        students = cursor.fetchall()
+
+        if len(students) == 0:
+            print("Students not Found.")
+            return
+
+        for student in students:
+            print(f"Student ID:{student[0]}")
+            print(f"Name:{student[1]}")
+            print(f"Age:{student[2]}")
+            print(f"City:{student[3]}")
+            print(f"Course:{student[4]}")
+            print(f"Mobile:{student[5]}")
+            print(f"Email:{student[6]}")
+            print_line()
+
+    except Error as e:
+            print(f"Error searching student:{e}") 
+    
+    finally:
+        if cursor is not None:
+            cursor.close()
+    
+        if connection in locals() and connection is not None and connection.is_connected():
+            connection.close()                
+                                  
+#count students by city
+
+def count_students_by_city():
+    cursor = None
+    connection = None
+    try:
+        print("\nStudent Count by City")
+        print_line()
+
+        connection = get_connection()
+
+        if connection is None:
+            print("Database connection Failed.")
+            return
+        cursor = connection.cursor()
+
+        query = """
+            SELECT city,COUNT(*) As Total_students
+            FROM tb_students
+            GROUP BY city
+        """
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        if len(results) == 0:
+            print("No City data available.")
+            return
+        for city,total in results:
+            print(f"City:{city}|Total Students:{total}")   
+
+    except Error as e:
+        print(f"Error counting student by city:{e}") 
+        
+    finally:
+        if cursor is not None:
+            cursor.close()
+        
+        if connection in locals() and connection is not None and connection.is_connected():
+            connection.close()              
+
+    
+ #show total students
+
+def show_total_students():
+    connection = None
+    cursor = None
+    try:
+        print("\n Total students")
+        print_line()
+
+        connection = get_connection()
+
+        if connection is None:
+            print("Database Connection Failed.")
+            return
+
+        cursor = connection.cursor()
+
+        query = "SELECT COUNT(*) FROM tb_students"
+
+        cursor.execute(query)
+        result= cursor.fetchall()
+
+        total = result[0]
+
+        print(f"Total Number of Students:{total}")
+
+    except Error as e:
+            print(f"Error showing students:{e}") 
+        
+    finally:
+        if cursor is not None:
+            cursor.close()
+        
+        if connection in locals() and connection is not None and connection.is_connected():
+            connection.close()                
+
+#show latest 5 students
+def show_latest_5_students():
+    cursor = None
+    connection = None
+    try:
+        print("\nLatest 5 Students")
+        print_line()
+
+        connection = get_connection()
+
+        if connection is None:
+            print("Databasae connection failed.")
+            return
+
+        cursor = connection.cursor()
+
+        query ="""
+            SELECT student_id,name,age,city,course,mobile,email
+            FROM tb_students
+            ORDER BY student_id DESC
+            LIMIT 5
+        """    
+        cursor.execute(query)
+        students = cursor.fetchall()
+
+        if len(students) == 0:
+            print("Student Not Found.")
+            return
+
+        for student in students:
+            print(f"Student ID:{student[0]}")
+            print(f"Name:{student[1]}")
+            print(f"Age:{student[2]}")
+            print(f"City:{student[3]}")
+            print(f"Course:{student[4]}")
+            print(f"Mobile:{student[5]}")
+            print(f"Email:{student[6]}")
+            print_line()
+
+    except Error as e:
+        print(f"Error viewing latest student:{e}") 
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+
+        if connection in locals() and connection is not None and connection.is_connected():
+            connection.close()         
         
